@@ -11,6 +11,8 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::post('/find', 'CpfController@find')->name('find');
+Route::post('/block', 'CpfController@block')->name('block');
+
+Route::resource('/', 'CpfController');
+

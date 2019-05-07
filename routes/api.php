@@ -25,3 +25,5 @@ Route::post('consulta/criar', 'API\ConsultaController@store');
 Route::post('consulta/deletar', 'API\ConsultaController@destroy');
 
 Route::get('consulta/status', 'API\ConsultaController@status');
+
+Route::post('consulta/block', 'API\ConsultaController@block');

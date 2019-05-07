@@ -283,4 +283,32 @@ class CpfController extends Controller
         }
     }
 
+    /**
+     * B
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function status()
+    {
+        $listagem['cpfs'] = Cpf::all();
+
+        $listagem['blacklist'] =  Cpf::where('blocked', '=', 1)->count();
+
+        if(!isset($_SESSION['consultas_counter']))
+        {
+            $_SESSION['consultas_counter'] = 0;
+        }
+        
+        $listagem['consultas_realizadas'] = $_SESSION['consultas_counter'];
+        //Cpf::sum('count');
+
+        $to = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $_SESSION['start_date']);
+        $from = \Carbon\Carbon::now();
+
+        $listagem['uptime'] = $to->diffInMinutes($from).' minutos';
+
+        return view('status', ['listagem' => $listagem]);
+    }
+
 }

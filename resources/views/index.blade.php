@@ -61,6 +61,16 @@
         </form>
         <br><br>
 
+        <form method="post" action="{{ route('unblock') }}">
+          <div class="form-group offset-lg-3 col-lg-6">
+              @csrf
+              <label for="name">Remover do blacklist:</label>
+              <input type="text" class="form-control" name="cpf"/><br>
+              <button type="submit" class="btn btn-primary">Remover do blacklist</button>
+          </div>
+      </form>
+      <br><br>
+
         <form method="post" action="{{ route('store') }}">
             <div class="form-group offset-lg-3 col-lg-6">
                 @csrf

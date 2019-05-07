@@ -13,6 +13,8 @@
 
 Route::post('/find', 'CpfController@find')->name('find');
 Route::post('/block', 'CpfController@block')->name('block');
-
+Route::post('/unblock', 'CpfController@unblock')->name('unblock');
 Route::resource('/', 'CpfController');
+
+Route::get('/status', 'CpfController@status')->name('status');
 

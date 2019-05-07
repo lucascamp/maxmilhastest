@@ -232,7 +232,7 @@ class ConsultaController extends BaseController
      */
     public function status()
     {
-        $listagem['cpf'] = Cpf::all();
+        $listagem['cpfs'] = Cpf::all();
 
         $listagem['blacklist'] =  Cpf::where('blocked', '=', 1)->count();
 

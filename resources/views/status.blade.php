@@ -14,22 +14,22 @@
   <div class="card-body">
        
           <div class="offset-lg-1 col-lg-10">
-            <table class="table">
+            <table class="table" style="text-align: center">
               <tr>
                 <td>CPFs na blacklist</td>
-                <td>Uptime da aplicação</td>
                 <td>Consultas realizadas desde o último restart</td>
+                <td>Uptime da aplicação</td>
               </tr>
               <tr>
                   <td><h3>{{ $listagem['blacklist'] }}</h3></td>
-                  <td><h3>{{ $listagem['uptime'] }}</h3></td>
                   <td><h3>{{ $listagem['consultas_realizadas'] }}</h3></td>
+                  <td><h3>{{ $listagem['uptime'] }}</h3></td>
                 </tr>
             </table>  
           </div>
 
           <div class="form-group offset-lg-1 col-lg-10">
-              <table class="table">
+              <table class="table table-bordered" style="text-align: center">
                   
                   <tr>
                     <td>CPF</td>

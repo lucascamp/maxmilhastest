@@ -71,7 +71,7 @@
       </form>
       <br><br>
 
-        <form method="post" action="{{ route('store') }}">
+        <form method="post" action="{{ route('remove') }}">
             <div class="form-group offset-lg-3 col-lg-6">
                 @csrf
                 <label for="name">Deletar CPF:</label>

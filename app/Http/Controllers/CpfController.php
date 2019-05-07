@@ -14,7 +14,7 @@ class CpfController extends Controller
     protected $cpf;
 
     /**
-     * Instantiate a new UserController instance.
+     * Inicializa construtor
      */
     public function __construct(Cpf $cpf)
     {
@@ -28,7 +28,7 @@ class CpfController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Exibe view com todas as ações.
      *
      * @return \Illuminate\Http\Response
      */
@@ -38,18 +38,61 @@ class CpfController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
+     * Pesquisa CPF e retornar ele com o status.
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function find(Request $request)
     {
-        //
+        try {
+            
+            //contador de consultas realizadas
+            if(!isset($_SESSION['consultas_counter']))
+            {
+                $_SESSION['consultas_counter'] = 0;
+            }
+
+            if(count($_GET) > 0)
+            {
+                $_SESSION['consultas_counter']++;
+            }
+
+            $input = $request->all();
+            
+            //remove caracteres especiais
+            $input['cpf'] = preg_replace('/\D/','',$input['cpf']);
+
+            //valida CPF
+            $valida_cpf = $this->cpf->validaCPF($input['cpf']);
+
+            if($valida_cpf)
+            {
+                $consulta_cpf = Cpf::where('cpf', '=', $input['cpf'])->first();
+                
+                if (!isset($consulta_cpf)) 
+                {
+                    return Redirect::back()->withErrors(['CPF '.$input['cpf'].' não cadastrado']);
+                }
+
+                $consulta_cpf->count = ($consulta_cpf->count + 1);
+                $consulta_cpf->save();
+
+                //retorna mensagem pelo status bloqueado
+                if($consulta_cpf->blocked == 1)
+                    return back()->with('status', 'CPF encontrado '.$consulta_cpf->cpf.', Status : BLOCKED');
+                else
+                    return back()->with('status', 'CPF encontrado '.$consulta_cpf->cpf.', Status : FREE');
+            }
+
+            return Redirect::back()->withErrors(['CPF '.$input['cpf'].' Inválido']);
+
+        } catch (Exception $e) {
+            return Redirect::back()->withErrors(['Erro na request']);
+        }
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
+     * Salva novos cpfs no banco
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
@@ -58,20 +101,24 @@ class CpfController extends Controller
         try {
             $input = $request->all();
 
+            //remove caracteres especiais
             $input['cpf'] = preg_replace('/\D/','',$input['cpf']);
 
+            //validação requerida
             $validator = Validator::make($input, [
                 'cpf' => 'required'
             ]);
-
+            
             if($validator->fails()){
                 return Redirect::back()->withErrors(['Preencha o CPF']);
             }
 
+            //validação customizada de cpf
             $valida_cpf = $this->cpf->validaCPF($input['cpf']);
 
             if($valida_cpf)
             {
+                //cria ou atualiza cpf
                 $cpf_new = Cpf::firstOrNew(['cpf' => $input['cpf']]);
                 $cpf_new->save();
                 
@@ -86,135 +133,16 @@ class CpfController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Request $request)
-    {
-        try{
-            $input = $request->all();
-
-            $input['cpf'] = preg_replace('/\D/','',$input['cpf']);
-                
-            $valida_cpf = $this->cpf->validaCPF($input['cpf']);
-
-            if($valida_cpf)
-            {
-                $deletedRows = Cpf::where('cpf', '=',  $input['cpf'])->delete();
-
-                return back()->with('status', 'CPF exlcuído '.$deletedRows->cpf);
-            }
-
-            return Redirect::back()->withErrors(['CPF '.$input['cpf'].' Inválido']);
-
-        } catch (Exception $e) {
-            return Redirect::back()->withErrors(['Erro na request']);
-        }
-    }
-
-    /**
-     * Pesquisa CPF e retornar ele com o status.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function find(Request $request)
-    {
-        try {
-
-            //contador de consultas realizadas
-            if(!isset($_SESSION['consultas_counter']))
-            {
-                $_SESSION['consultas_counter'] = 0;
-            }
-
-            if(count($_GET) > 0)
-            {
-                $_SESSION['consultas_counter']++;
-            }
-
-            $input = $request->all();
-
-            //remove caracteres especiais
-            $input['cpf'] = preg_replace('/\D/','',$input['cpf']);
-
-            //valida CPF
-            $valida_cpf = $this->cpf->validaCPF($input['cpf']);
-
-            if($valida_cpf)
-            {
-                $consulta_cpf = Cpf::where('cpf', '=', $input['cpf'])->firstOrFail();
-
-                if (is_null($consulta_cpf)) 
-                {
-                    return Redirect::back()->withErrors(['CPF '.$input['cpf'].' não existe']);
-                }
-
-                $consulta_cpf->count = ($consulta_cpf->count + 1);
-                $consulta_cpf->save();
-
-                if($consulta_cpf->blocked == 1)
-                    return back()->with('status', 'CPF encontrado '.$consulta_cpf->cpf.', Status : BLOCKED');
-                else
-                    return back()->with('status', 'CPF encontrado '.$consulta_cpf->cpf.', Status : FREE');
-            }
-
-            return Redirect::back()->withErrors(['CPF '.$input['cpf'].' Inválido']);
-
-
-        } catch (Exception $e) {
-            return Redirect::back()->withErrors(['Erro na request']);
-        }
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
+     * Bloqueia CPF
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function block(Request $request)
     {
         try{
-
             $input = $request->all();
 
+            //remove caracteres especiais
             $input['cpf'] = preg_replace('/\D/','',$input['cpf']);
 
             $validator = Validator::make($input, [
@@ -225,6 +153,7 @@ class CpfController extends Controller
                 return Redirect::back()->withErrors(['CPF '.$input['cpf'].' não existe']);       
             }
 
+            //valida CPF
             $valida_cpf = $this->cpf->validaCPF($input['cpf']);
 
             if($valida_cpf)
@@ -244,8 +173,7 @@ class CpfController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
+     * Debloqueia CPF
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
@@ -255,6 +183,7 @@ class CpfController extends Controller
 
             $input = $request->all();
 
+            //remove caracteres especiais
             $input['cpf'] = preg_replace('/\D/','',$input['cpf']);
 
             $validator = Validator::make($input, [
@@ -265,6 +194,7 @@ class CpfController extends Controller
                 return Redirect::back()->withErrors(['CPF '.$input['cpf'].' não existe']);       
             }
 
+            //valida CPF
             $valida_cpf = $this->cpf->validaCPF($input['cpf']);
 
             if($valida_cpf)
@@ -284,15 +214,43 @@ class CpfController extends Controller
     }
 
     /**
-     * B
-     *
-     * @param  int  $id
+     * Remove cpf do banco de acordo com input do formulario.
+     * @param  array  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function remove(Request $request)
+    {
+        try{
+            $input = $request->all();
+
+            //remove caracteres especiais e valida
+            $input['cpf'] = preg_replace('/\D/','',$input['cpf']);
+            $valida_cpf = $this->cpf->validaCPF($input['cpf']);
+
+            if($valida_cpf)
+            {
+                $deletedRows = Cpf::where('cpf', '=',  $input['cpf'])->delete();
+
+                return back()->with('status', 'CPF excluído '.$input['cpf']);
+            }
+
+            return Redirect::back()->withErrors(['CPF '.$input['cpf'].' Inválido']);
+
+        } catch (Exception $e) {
+            return Redirect::back()->withErrors(['Erro na request']);
+        }
+    }
+
+    /**
+     * retorna dados referentes ao app
      * @return \Illuminate\Http\Response
      */
     public function status()
     {
+        //busca todos os cpfs cadastrados
         $listagem['cpfs'] = Cpf::all();
 
+        //busca total de cpfs no blacklist
         $listagem['blacklist'] =  Cpf::where('blocked', '=', 1)->count();
 
         if(!isset($_SESSION['consultas_counter']))
@@ -300,15 +258,15 @@ class CpfController extends Controller
             $_SESSION['consultas_counter'] = 0;
         }
         
+        //busca consultas ja realizadas
         $listagem['consultas_realizadas'] = $_SESSION['consultas_counter'];
-        //Cpf::sum('count');
 
         $to = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $_SESSION['start_date']);
         $from = \Carbon\Carbon::now();
 
+        //calcula uptime do servidor
         $listagem['uptime'] = $to->diffInMinutes($from).' minutos';
 
         return view('status', ['listagem' => $listagem]);
     }
-
 }

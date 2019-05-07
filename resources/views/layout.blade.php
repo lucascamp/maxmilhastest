@@ -11,8 +11,10 @@
   <div class="container">
     @yield('content')
   </div>
-  <script src="{{ asset('js/app.js') }}" type="text/js"></script>
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="{{ asset('js/app.js') }}" type="text/js"></script>
   <script src="{{ asset('js/main.js') }}" type="text/js"></script>
+  
 </body>
 </html>

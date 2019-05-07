@@ -11,10 +11,10 @@ use Session;
 class ConsultaController extends BaseController
 {
     protected $cpf;
-
+    
     /**
-     * Instantiate a new UserController instance.
-     */
+     * Inicializa construtor
+     */ 
     public function __construct(Cpf $cpf)
     {
         session_start();
@@ -26,9 +26,8 @@ class ConsultaController extends BaseController
         $this->cpf = $cpf;
     }
 
-    /**
-     * short url in bitly.
-     *
+   /**
+     * Pesquisa CPF e retornar ele com o status.
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
@@ -36,16 +35,27 @@ class ConsultaController extends BaseController
     {
         try {
 
+            //contador de consultas realizadas
+            if(!isset($_SESSION['consultas_counter']))
+            {
+                $_SESSION['consultas_counter'] = 0;
+            }
+
+            if(count($_GET) > 0)
+            {
+                $_SESSION['consultas_counter']++;
+            }
+
             $input = $request->all();
             
+            //remove caracteres especiais
             $input['cpf'] = preg_replace('/\D/','',$input['cpf']);
-
             
             $valida_cpf = $this->cpf->validaCPF($input['cpf']);
 
             if($valida_cpf)
             {
-
+                //valida CPF
                 $consulta_cpf = Cpf::where('cpf', '=', $input['cpf'])->firstOrFail();
 
                 if (is_null($consulta_cpf)) 
@@ -56,16 +66,6 @@ class ConsultaController extends BaseController
                 $consulta_cpf->count = ($consulta_cpf->count + 1);
                 $consulta_cpf->save();
 
-                if(!isset($_SESSION['consultas_counter']))
-                {
-                    $_SESSION['consultas_counter'] = 0;
-                }
-
-                if(count($_GET) > 0)
-                {
-                    $_SESSION['consultas_counter']++;
-                }
-                
                 return $this->sendResponse($consulta_cpf->toArray(), 'consulta_cpf retrieved successfully.')->setStatusCode(200);
             }
 
@@ -78,8 +78,7 @@ class ConsultaController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
+     * Salva novos cpfs no banco
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
@@ -88,8 +87,10 @@ class ConsultaController extends BaseController
         try {
             $input = $request->all();
 
+            //remove caracteres especiais
             $input['cpf'] = preg_replace('/\D/','',$input['cpf']);
 
+            //validação requerida
             $validator = Validator::make($input, [
                 'cpf' => 'required'
             ]);
@@ -98,10 +99,12 @@ class ConsultaController extends BaseController
                 return $this->sendError('Validation Error.', $validator->errors())->setStatusCode(400);       
             }
 
+            //validação customizada de cpf
             $valida_cpf = $this->cpf->validaCPF($input['cpf']);
 
             if($valida_cpf)
             {
+                //cria ou atualiza cpf
                 $cpf_new = Cpf::firstOrNew($input);
                 $cpf_new->save();
             
@@ -116,8 +119,7 @@ class ConsultaController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
+     * Bloqueia CPF
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
@@ -127,6 +129,7 @@ class ConsultaController extends BaseController
 
             $input = $request->all();
 
+            //remove caracteres especiais
             $input['cpf'] = preg_replace('/\D/','',$input['cpf']);
 
             $validator = Validator::make($input, [
@@ -137,6 +140,7 @@ class ConsultaController extends BaseController
                 return $this->sendError('Validation Error.', $validator->errors())->setStatusCode(400);       
             }
 
+            //valida CPF
             $valida_cpf = $this->cpf->validaCPF($input['cpf']);
 
             if($valida_cpf)
@@ -155,9 +159,8 @@ class ConsultaController extends BaseController
         }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
+     /**
+     * Debloqueia CPF
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
@@ -167,6 +170,7 @@ class ConsultaController extends BaseController
 
             $input = $request->all();
 
+            //remove caracteres especiais
             $input['cpf'] = preg_replace('/\D/','',$input['cpf']);
 
             $validator = Validator::make($input, [
@@ -177,6 +181,7 @@ class ConsultaController extends BaseController
                 return $this->sendError('Validation Error.', $validator->errors())->setStatusCode(400);       
             }
 
+            //valida CPF
             $valida_cpf = $this->cpf->validaCPF($input['cpf']);
 
             if($valida_cpf)
@@ -196,9 +201,8 @@ class ConsultaController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
+     * Remove cpf do banco de acordo com input do formulario.
+     * @param  array  $request
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request)
@@ -206,8 +210,8 @@ class ConsultaController extends BaseController
         try{
             $input = $request->all();
 
+            //remove caracteres especiais e valida
             $input['cpf'] = preg_replace('/\D/','',$input['cpf']);
-                
             $valida_cpf = $this->cpf->validaCPF($input['cpf']);
 
             if($valida_cpf)
@@ -224,16 +228,16 @@ class ConsultaController extends BaseController
         }
     }
 
-    /**
-     * B
-     *
-     * @param  int  $id
+   /**
+     * retorna dados referentes ao app
      * @return \Illuminate\Http\Response
      */
     public function status()
     {
+        //busca todos os cpfs cadastrados
         $listagem['cpfs'] = Cpf::all();
 
+        //busca total de cpfs no blacklist
         $listagem['blacklist'] =  Cpf::where('blocked', '=', 1)->count();
 
         if(!isset($_SESSION['consultas_counter']))
@@ -241,12 +245,13 @@ class ConsultaController extends BaseController
             $_SESSION['consultas_counter'] = 0;
         }
         
+        //busca consultas ja realizadas
         $listagem['consultas_realizadas'] = $_SESSION['consultas_counter'];
-        //Cpf::sum('count');
 
         $to = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $_SESSION['start_date']);
         $from = \Carbon\Carbon::now();
 
+        //calcula uptime do servidor
         $listagem['uptime'] = $to->diffInMinutes($from).' minutos';
 
         return $this->sendResponse($listagem, 'Status serviço')->setStatusCode(200);

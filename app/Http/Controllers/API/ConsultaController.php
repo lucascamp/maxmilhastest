@@ -66,6 +66,7 @@ class ConsultaController extends BaseController
                 $consulta_cpf->count = ($consulta_cpf->count + 1);
                 $consulta_cpf->save();
 
+                
                 return $this->sendResponse($consulta_cpf->toArray(), 'consulta_cpf retrieved successfully.')->setStatusCode(200);
             }
 

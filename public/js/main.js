@@ -1,7 +1,3 @@
-/* jQuery(function ($) {
-    $("#comp_nota").mask("99/9999");
-}); */
-
 $( document ).ready(function() {
-    console.log( "ready!" );
+    $('.cpf').mask('000.000.000-00', {reverse: true});
 });

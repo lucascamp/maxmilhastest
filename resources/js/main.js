@@ -1,9 +1,4 @@
-window.onload = function() {
-    if (window.jQuery) {  
-        // jQuery is loaded  
-        alert("Yeah!");
-    } else {
-        // jQuery is not loaded
-        alert("Doesn't Work");
-    }
-}
+$( document ).ready(function() {
+    alert('asd');
+    $('.cpf').mask('000.000.000-00', {reverse: true});
+});

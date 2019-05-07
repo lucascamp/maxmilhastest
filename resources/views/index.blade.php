@@ -35,7 +35,7 @@
           <div class="form-group offset-lg-3 col-lg-6">
               @csrf
               <label for="name">Buscar CPF:</label>
-              <input type="text" class="form-control" name="cpf"/><br>
+              <input type="text" class="cpf form-control" name="cpf"/><br>
               <button type="submit" class="btn btn-primary">Buscar CPF</button>
           </div>
         </form>
@@ -45,7 +45,7 @@
             <div class="form-group offset-lg-3 col-lg-6">
                 @csrf
                 <label for="name">Adicionar CPF:</label>
-                <input type="text" class="form-control" name="cpf"/><br>
+                <input type="text" class="cpf form-control" name="cpf"/><br>
                 <button type="submit" class="btn btn-primary">Adicionar CPF</button>
             </div>
         </form>
@@ -55,7 +55,7 @@
             <div class="form-group offset-lg-3 col-lg-6">
                 @csrf
                 <label for="name">Adicionar ao blacklist:</label>
-                <input type="text" class="form-control" name="cpf"/><br>
+                <input type="text" class="cpf form-control" name="cpf"/><br>
                 <button type="submit" class="btn btn-primary">Adicionar ao blacklist</button>
             </div>
         </form>
@@ -65,7 +65,7 @@
           <div class="form-group offset-lg-3 col-lg-6">
               @csrf
               <label for="name">Remover do blacklist:</label>
-              <input type="text" class="form-control" name="cpf"/><br>
+              <input type="text" class="cpf form-control" name="cpf"/><br>
               <button type="submit" class="btn btn-primary">Remover do blacklist</button>
           </div>
       </form>
@@ -75,7 +75,7 @@
             <div class="form-group offset-lg-3 col-lg-6">
                 @csrf
                 <label for="name">Deletar CPF:</label>
-                <input type="text" class="form-control" name="cpf"/><br>
+                <input type="text" class="cpf form-control" name="cpf"/><br>
                 <button type="submit" class="btn btn-primary">Deletar CPF</button>
             </div>
         </form>

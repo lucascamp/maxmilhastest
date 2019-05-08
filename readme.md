@@ -1,71 +1,69 @@
-<p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+## Teste Maxmilhas
 
-## About Laravel
+Para executar o teste clone o projeto em localhost com o GIT
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+1-Instale o composer
+2-Execute o comando composer-update
+3-Renomear o env.example para .env e configurar o banco local
+4-Criar o banco maxmilhas
+5-Executar php artisan key:generate
+6-Executar php artisan migrate
+7-acessar o localhost/{pasta_onde_foi_clonado} (o index tem as funcionalidades solicitadas)
+8-acessar o localhost/{pasta_onde_foi_clonado}/status (relatório de uso)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Rotas para consulta via API Laravel
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+-Busca dados do CPF
+GET localhost/{pasta_onde_foi_clonado}API/consulta/cpf?cpf=12312312312
 
-## Learning Laravel
+-Adiciona novo CPF
+POST localhost/{pasta_onde_foi_clonado}API/store
+enviar variavel cpf : {valor}
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+-Deleta CPF
+POST localhost/{pasta_onde_foi_clonado}API/destroy
+enviar variavel cpf : {valor}
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1100 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost you and your team's skills by digging into our comprehensive video library.
+retorna os status da aplicação (uptime contagem requisicoes etc...)
+GET localhost/{pasta_onde_foi_clonado}API/status
 
-## Laravel Sponsors
+-Bloqueia o CPF
+POST localhost/{pasta_onde_foi_clonado}API/block
+enviar variavel cpf : {valor}
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+-Desloqueia o CPF
+POST localhost/{pasta_onde_foi_clonado}API/unblock
+enviar variavel cpf : {valor}
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- [UserInsights](https://userinsights.com)
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
-- [iMi digital](https://www.imi-digital.de/)
-- [Earthlink](https://www.earthlink.ro/)
-- [Steadfast Collective](https://steadfastcollective.com/)
-- [We Are The Robots Inc.](https://watr.mx/)
-- [Understand.io](https://www.understand.io/)
-- [Abdel Elrafa](https://abdelelrafa.com)
+## Docker
 
-## Contributing
+Como foi a primeira vez que usei docker, não entendi como gerar o dockerfile
+Copiei todo o projeto e zipei
+Criei o projeto e funcionou local seguindo os passos abaixo
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+1-Descompacte o projeto
+2-Acesse o terminal e abra {caminho www}/maxmilhas/laradock
+3-Executar o comando docker-compose up -d mysql nginx
+4-Excutar comando docker-compose exec --user=laradock workspace bash
+5-Execute o comando composer-update
+6-Renomear o env.example para .env e configurar o banco local
+7-Criar o banco maxmilhas
+8-Executar php artisan key:generate
+9-Executar php artisan migrate
+10-acessar o localhost (o index tem as funcionalidades solicitadas)
+11-acessar o localhost/status (relatório de uso)
 
-## Security Vulnerabilities
+tive problemas com a ultima versão do mysql 8.0
+e executei os comandos abaixo para resolver:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+CREATE USER 'admin'@'localhost' IDENTIFIED WITH mysql_native_password BY '123456';
+GRANT ALL PRIVILEGES ON *.* TO 'admin'@'localhost' WITH GRANT OPTION;
+CREATE USER 'admin'@'%' IDENTIFIED WITH mysql_native_password BY '123456';
+GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' WITH GRANT OPTION;
+CREATE DATABASE IF NOT EXISTS `maxmilhas` COLLATE 'utf8_general_ci' ;
+GRANT ALL ON `maxmilhas`.* TO 'admin'@'%' ;
+FLUSH PRIVILEGES ;
 
-## License
+alterar arquivo .env user admin password 123456
 
-The Laravel framework is open-source software licensed under the [MIT license](https://opensource.org/licenses/MIT).
